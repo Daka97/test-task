@@ -7,8 +7,4 @@ export class StudentGradesDto {
     @IsString()
     studentId: number;
 
-    @ApiProperty()
-    @IsString()
-    groupId: number;
-
 }

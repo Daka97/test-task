@@ -11,15 +11,15 @@ import { GroupsService } from 'src/groups/groups.service';
 @Injectable()
 export class StudentsService {
   constructor(
-  @InjectRepository(Student)
+    @InjectRepository(Student)
     private readonly studentRepository: Repository<Student>,
-    private readonly groupService: GroupsService) {}
+    private readonly groupService: GroupsService) { }
 
   create(createStudentDto: CreateStudentDto) {
-    const {userId, groupId} = createStudentDto;
+    const { userId, groupId } = createStudentDto;
     const student = this.studentRepository.create({
-      user: {id: userId},
-      group: {id: groupId}
+      user: { id: userId },
+      group: { id: groupId }
     });
     return this.studentRepository.save(student);
   }
@@ -30,7 +30,7 @@ export class StudentsService {
     const [students, total] = await this.studentRepository.findAndCount({
       skip: (page - 1) * size,
       take: size,
-      relations:['user', 'group']
+      relations: ['user', 'group']
     });
 
     if (!students || students.length === 0) {
@@ -40,8 +40,8 @@ export class StudentsService {
     return { students, total };
   }
 
- async findOne(id: number) {
-    const student = await this.studentRepository.findOne({ where: { id }, relations:['user', 'group']})
+  async findOne(id: number) {
+    const student = await this.studentRepository.findOne({ where: { id }, relations: ['user', 'group'] })
     if (!student) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
@@ -49,24 +49,24 @@ export class StudentsService {
   }
 
   async remove(id: number) {
-     await this.studentRepository.softDelete(id)
+    await this.studentRepository.softDelete(id)
   }
   async update(id: number, updateStudentDto: UpdateStudentDto) {
     const student = await this.findOne(id);
 
-  if (!student) {
-    throw new NotFoundException(`Student with ID ${id} not found`);
-  }
+    if (!student) {
+      throw new NotFoundException(`Student with ID ${id} not found`);
+    }
 
-  const newGroupId: number = updateStudentDto.groupId;
-  const newGroup = await this.groupService.findOne(newGroupId);
+    const newGroupId: number = updateStudentDto.groupId;
+    const newGroup = await this.groupService.findOne(newGroupId);
 
-  if (!newGroup) {
-    throw new NotFoundException(`Group with ID ${newGroupId} not found`);
-  }
-  student.group = newGroup;
+    if (!newGroup) {
+      throw new NotFoundException(`Group with ID ${newGroupId} not found`);
+    }
+    student.group = newGroup;
 
 
-  return this.studentRepository.save(student);
+    return this.studentRepository.save(student);
   }
 }

@@ -5,6 +5,7 @@ import { Grade } from './entities/grade.entity';
 import { Repository } from 'typeorm';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { StudentGradesDto } from './dto/student-grade.dto';
+import { StudentsService } from 'src/students/students.service';
 
 @Injectable()
 export class GradesService {
@@ -12,6 +13,7 @@ export class GradesService {
   constructor(
     @InjectRepository(Grade)
     private readonly gradeRepository: Repository<Grade>,
+    private readonly studentService: StudentsService,
   ) { }
   create(createGradeDto: CreateGradeDto) {
     const { value, studentId, subjectId } = createGradeDto;
@@ -31,7 +33,7 @@ export class GradesService {
     });
 
     if (!grades || grades.length === 0) {
-      throw new NotFoundException('No users found.');
+      throw new NotFoundException('No grades found.');
     }
 
     return { grades, total };
@@ -40,15 +42,17 @@ export class GradesService {
   async findOne(id: number) {
     const grade = await this.gradeRepository.findOne({ where: { id } })
     if (!grade) {
-      throw new NotFoundException(`User with ID ${id} not found`);
+      throw new NotFoundException(`Grade with ID ${id} not found`);
     }
     return grade;
   }
 
   async findAverageGrades(studentGradesDto: StudentGradesDto) {
-    const { studentId, groupId } = studentGradesDto;
-    if (!studentId || !groupId) {
-      throw new BadRequestException('Invalid input parameters');
+    const { studentId } = studentGradesDto;
+
+    const student = await this.studentService.findOne(studentId)
+    if (!student) {
+      throw new NotFoundException(`Student with ID ${studentId} not found`);
     }
 
     const grades = await this.gradeRepository.find({

@@ -43,6 +43,6 @@ export class GroupsService {
   }
 
   async remove(id: number) {
-     await this.groupRepository.softDelete(id)
+    await this.groupRepository.softDelete(id)
   }
 }

@@ -7,6 +7,8 @@ import { UsersService } from 'src/users/users.service';
 import { User } from 'src/users/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { UserResponse } from 'src/users/response/user.response';
+import { Response } from 'express';
+import { UserInRequestType } from 'src/users/type/user-request.type';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +22,7 @@ export class AuthService {
     const { username, password } = loginDto;
 
     const user: UserResponse =  await this.userService.findByUserName(username);
+
     const { id } = user;
     if (!user) {
       throw new HttpException("User is not found", HttpStatus.NOT_FOUND);
@@ -50,11 +53,23 @@ export class AuthService {
 			expiresIn: expiresIn,
 		});
 
-		// res.cookie("refreshToken", refToken, {
-		// 	httpOnly: true,
-		// 	maxAge: parseInt(expiresIn, 10) * 1000,
-		// });
+		res.cookie("refreshToken", refToken, {
+			httpOnly: true,
+			maxAge: parseInt(expiresIn, 10) * 1000,
+		});
 
 		return refToken;
 	}
+
+  public async refresh(res: Response, user: UserInRequestType): Promise<any> {
+		const accessToken = this.getAccessJwtToken({ id: user.id });
+
+		const refreshToken = this.getJwtRefreshTokenAndSetInCookie(res, { id: user.id });
+		return { accessToken, refreshToken };
+	}
+
+  public async logout(res: Response): Promise<void> {
+    res.clearCookie('refreshToken');
+  }
+
 }

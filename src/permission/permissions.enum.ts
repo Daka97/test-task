@@ -3,7 +3,20 @@ export enum Permissions {
     READ_SUBJECT = 'read_subject',
     UPDATE_SUBJECT = 'update_subject',
     DELETE_SUBJECT = 'delete_subject',
-    READ_SCHEDULE = "read_schedule",
-    READ_GRADES = "read_grades"
+    CREATE_GRADES = 'create_grades',
+    READ_GRADES = 'read_grades',
+    UPDATE_GRADES = 'update_grades',
+    DELETE_GRADES = 'delete_grades',
+    CREATE_GROUPS = 'create_groups',
+    READ_GROUPS = 'read_groups',
+    UPDATE_GROUPS = 'update_groups',
+    DELETE_GROUPS = 'delete_groups',
+    READ_STUDENT = 'read_student',
+    UPDATE_STUDENT = 'update_student',
+    DELETE_STUDENT = 'delete_student',
+    ACCESS_SYSTEM_REPORTS = 'access_system_reports',
+    READ_USERS = 'read_users',
+    UPDATE_USERS = 'update_users',
+    DELETE_USERS = 'delete_users',
 }
   

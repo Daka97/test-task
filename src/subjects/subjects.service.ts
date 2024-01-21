@@ -9,15 +9,15 @@ import { PaginationDto } from 'src/common/dto/pagination.dto';
 @Injectable()
 export class SubjectsService {
   constructor(
-  @InjectRepository(Subject)
+    @InjectRepository(Subject)
     private readonly subjectRepository: Repository<Subject>,
-  ) {}
+  ) { }
   create(createSubjectDto: CreateSubjectDto) {
     const subject = this.subjectRepository.create(createSubjectDto);
     return this.subjectRepository.save(subject);
   }
 
- async findAll(params: PaginationDto) {
+  async findAll(params: PaginationDto) {
     const page = Number(params.page)
     const size = Number(params.size);
     const [subjects, total] = await this.subjectRepository.findAndCount({
@@ -32,7 +32,7 @@ export class SubjectsService {
     return { subjects, total };
   }
 
- async findOne(id: number) {
+  async findOne(id: number) {
     const subject = await this.subjectRepository.findOne({ where: { id } })
     if (!subject) {
       throw new NotFoundException(`User with ID ${id} not found`);
@@ -41,6 +41,6 @@ export class SubjectsService {
   }
 
   async remove(id: number) {
-     await this.subjectRepository.softDelete(id)
+    await this.subjectRepository.softDelete(id)
   }
 }

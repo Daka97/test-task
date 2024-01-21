@@ -1,7 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus,HttpCode, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus,HttpCode, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
+import { Response } from 'express';
+import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
+import { User } from './decorator/user.decorator';
+import { UserInRequestType } from 'src/users/type/user-request.type';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { UserResponse } from 'src/users/response/user.response';
 
 @ApiTags('Auth')
 @Controller({
@@ -18,19 +24,17 @@ export class AuthController {
 		return await this.authService.login(res, loginDto);
 	}
 
-	// @ApiOkResponse(swaggerType(TokensResponse))
-	// @UseGuards(JwtRefreshGuard)
-	// @Post("refresh")
-	// public async refresh(@Res({ passthrough: true }) res: Response, @User() user: UserInRequestType): Promise<TokensResponse> {
-	// 	return await this.authService.refresh(res, user);
-	// }
+	@UseGuards(JwtRefreshGuard)
+	@Post("refresh")
+	public async refresh(@Res({ passthrough: true }) res: Response, @User() user: UserInRequestType): Promise<any> {
+		return await this.authService.refresh(res, user);
+	}
 
-	// @ApiCreatedResponse()
-	// @UseGuards(JwtAuthGuard)
-	// @ApiBearerAuth()
-	// @Post("logout")
-	// @HttpCode(HttpStatus.NO_CONTENT)
-	// public logOut(@User() user: UserResponse): Promise<void> {
-	// 	return this.authService.removeRefreshToken(user.id);
-	// }
+	@UseGuards(JwtAuthGuard)
+	@ApiBearerAuth()
+	@Post("logout")
+	@HttpCode(HttpStatus.NO_CONTENT)
+	public logOut(@Res({ passthrough: true }) res: Response): Promise<void> {
+		return this.authService.logout(res);
+	}
 }
