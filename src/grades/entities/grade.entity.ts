@@ -8,9 +8,9 @@ export class Grade {
   id: number;
 
   @Column()
-  value: number;
+  value: string;
 
-  @ManyToOne(() => Student, (student: { grades: any; }) => student.grades)
+  @ManyToOne(() => Student, (student: { grades: any}) => student.grades)
   student: Student;
 
   @ManyToOne(() => Subject, (subject: { grades: any; }) => subject.grades)

@@ -1,8 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { SubjectsService } from './subjects.service';
 import { CreateSubjectDto } from './dto/create-subject.dto';
-import { UpdateSubjectDto } from './dto/update-subject.dto';
+import { Permissions } from 'src/permission/permissions.enum';
+import { SetRoutePermissions } from 'src/auth/decorator/set-permission.decorator';
+import { ApiTags } from '@nestjs/swagger';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
+@ApiTags("Subjects")
 @Controller('subjects')
 export class SubjectsController {
   constructor(private readonly subjectsService: SubjectsService) {}
@@ -13,18 +17,15 @@ export class SubjectsController {
   }
 
   @Get()
-  findAll() {
-    return this.subjectsService.findAll();
+	@SetRoutePermissions([Permissions.READ_SUBJECT])
+  findAll(@Query() params: PaginationDto) {
+    return this.subjectsService.findAll(params);
   }
 
   @Get(':id')
+	@SetRoutePermissions([Permissions.READ_SUBJECT])
   findOne(@Param('id') id: string) {
     return this.subjectsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSubjectDto: UpdateSubjectDto) {
-    return this.subjectsService.update(+id, updateSubjectDto);
   }
 
   @Delete(':id')

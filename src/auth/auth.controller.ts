@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus,HttpCode, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
 
 @ApiTags('Auth')
@@ -13,10 +13,9 @@ export class AuthController {
 
   // @ApiOkResponse(swaggerType(LoginResponse))
 	@HttpCode(HttpStatus.OK)
-	// @UseGuards(LocalAuthGuard)
 	@Post("login")
 	public async login(@Res({ passthrough: true }) res: Response, @Body() loginDto: LoginDto): Promise<any> {
-		// return await this.authService.login(res, loginDto);
+		return await this.authService.login(res, loginDto);
 	}
 
 	// @ApiOkResponse(swaggerType(TokensResponse))

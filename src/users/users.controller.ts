@@ -1,8 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { AuthGuard } from '@nestjs/passport';
 
+@ApiTags('Users')
+// @UseGuards(AuthGuard('jwt'))
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -13,18 +18,18 @@ export class UsersController {
   }
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
-
-  @Get(':id')
-  findOneById(@Param('id') id: string) {
-    return this.usersService.findOneById(+id);
+  findAll(@Query() params: PaginationDto) {
+    return this.usersService.findAll(params);
   }
 
   @Get(':username')
   findByUserName(@Param('username') username: string) {
     return this.usersService.findByUserName(username);
+  }
+
+  @Get(':id')
+  findOneById(@Param('id') id: string) {
+    return this.usersService.findOneById(+id);
   }
 
   @Patch(':id')
@@ -36,4 +41,6 @@ export class UsersController {
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);
   }
+
+
 }

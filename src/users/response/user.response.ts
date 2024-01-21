@@ -5,6 +5,9 @@ export class UserResponse {
 	id: number;
 
 	@ApiProperty()
+	password: string;
+
+	@ApiProperty()
 	login: string;
 
 	@ApiProperty()

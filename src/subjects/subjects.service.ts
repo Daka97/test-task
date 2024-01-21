@@ -1,26 +1,46 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSubjectDto } from './dto/create-subject.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Subject } from './entities/subject.entity';
+import { Repository } from 'typeorm';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Injectable()
 export class SubjectsService {
+  constructor(
+  @InjectRepository(Subject)
+    private readonly subjectRepository: Repository<Subject>,
+  ) {}
   create(createSubjectDto: CreateSubjectDto) {
-    return 'This action adds a new subject';
+    const subject = this.subjectRepository.create(createSubjectDto);
+    return this.subjectRepository.save(subject);
   }
 
-  findAll() {
-    return `This action returns all subjects`;
+ async findAll(params: PaginationDto) {
+    const page = Number(params.page)
+    const size = Number(params.size);
+    const [subjects, total] = await this.subjectRepository.findAndCount({
+      skip: (page - 1) * size,
+      take: size,
+    });
+
+    if (!subjects || subjects.length === 0) {
+      throw new NotFoundException('No users found.');
+    }
+
+    return { subjects, total };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} subject`;
+ async findOne(id: number) {
+    const subject = await this.subjectRepository.findOne({ where: { id } })
+    if (!subject) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    return subject;
   }
 
-  update(id: number, updateSubjectDto: UpdateSubjectDto) {
-    return `This action updates a #${id} subject`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} subject`;
+  async remove(id: number) {
+     await this.subjectRepository.softDelete(id)
   }
 }

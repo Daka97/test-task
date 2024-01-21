@@ -1,4 +1,4 @@
-// user.entity.ts
+import { Permissions } from 'src/permission/permissions.enum';
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
 
 
@@ -15,14 +15,17 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ unique: true })
   username: string;
+
+  @Column({ nullable: true })
+  fullname: string;
 
   @Column()
   password: string;
 
   @Column()
-  role: string;
+  role: UserRole;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -32,4 +35,7 @@ export class User {
 
   @DeleteDateColumn()
   deletedAt: Date;
+
+  @Column('simple-array', {nullable: true}) 
+  permissions: Permissions[];
 }

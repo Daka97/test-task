@@ -1,12 +1,4 @@
-import { DatabaseConfig, DatabaseConfigType } from './config.type';
-import { User } from 'src/users/entities/user.entity';
-import { Student } from 'src/students/entities/student.entity';
-import { Subject } from 'src/subjects/entities/subject.entity';
-import { Group } from 'src/groups/entities/group.entity';
-import { Grade } from 'src/grades/entities/grade.entity';
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
-
+import { DatabaseConfigType } from './config.type';
 import { registerAs } from '@nestjs/config';
 
 

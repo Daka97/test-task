@@ -11,36 +11,30 @@ import { UserResponse } from 'src/users/response/user.response';
 @Injectable()
 export class AuthService {
   constructor(
-    // private readonly userService: UsersService, 
+    private readonly userService: UsersService, 
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
 
-  // async login(res: Response, loginDto: LoginDto): Promise<any> {
-  //   const { username, password } = loginDto;
+  async login(res: Response, loginDto: LoginDto): Promise<any> {
+    const { username, password } = loginDto;
 
-  //   // Find the user by username
-  //   const user: any = this.userService.findByUserName(username);
+    const user: UserResponse =  await this.userService.findByUserName(username);
+    const { id } = user;
+    if (!user) {
+      throw new HttpException("User is not found", HttpStatus.NOT_FOUND);
+    }
 
-  //   const { id } = user;
-  //   if (!user) {
-  //     throw new HttpException("User is not found", HttpStatus.NOT_FOUND);
-  //   }
+    const isPasswordValid = await compare(password, user[0].password);
 
-  //   // Check if the provided password matches the stored hashed password
-  //   const isPasswordValid = await compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new HttpException("Invalid password", HttpStatus.NOT_FOUND);
+    }
 
-  //   if (!isPasswordValid) {
-  //     throw new HttpException("Invalid password", HttpStatus.NOT_FOUND);
-  //   }
-
-  //   // Generate JWT token
-  //   const accessToken = this.getAccessJwtToken({ user });
-	// 	const refreshToken = this.getJwtRefreshTokenAndSetInCookie(res, { id });
-
-  //   // Return the token or any other necessary information
-  //   // return res.json({ token, user });
-  // }
+    const accessToken = this.getAccessJwtToken({ id });
+		const refreshToken = this.getJwtRefreshTokenAndSetInCookie(res, { id });
+    return { accessToken, refreshToken, user };
+  }
 
 	public getAccessJwtToken(tokenPayload: any): string {
 		return this.jwtService.sign(tokenPayload, {

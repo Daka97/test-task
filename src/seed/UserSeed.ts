@@ -1,5 +1,5 @@
 
-import { User } from '../users/entities/user.entity';
+import { User, UserRole } from '../users/entities/user.entity';
 import { Factory, Seeder } from 'typeorm-seeding';
 
 export class AdminUserSeed implements Seeder {
@@ -7,7 +7,7 @@ export class AdminUserSeed implements Seeder {
     return await factory(User)().create({
       username: 'admin',
       password: 'adminpassword',
-      role: 'admin',
+      role: UserRole.DIRECTOR,
     });
   }
 }

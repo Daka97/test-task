@@ -1,6 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, DeleteDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, DeleteDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 
 import { Group } from 'src/groups/entities/group.entity';
+import { User } from 'src/users/entities/user.entity';
+import { Permissions } from 'src/permission/permissions.enum';
 import { Grade } from 'src/grades/entities/grade.entity';
 
 @Entity()
@@ -8,16 +10,13 @@ export class Student {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  name: string;
-
-  @Column()
-  rollNumber: string;
+  @ManyToOne(() => User, (user) => user.id)
+  user: User;
 
   @ManyToOne(() => Group, (group) => group.students)
   group: Group;
 
-  @ManyToOne(() => Grade, (grade) => grade.subject)
+  @OneToMany(() => Grade, (grade) => grade.student)
   grades: Grade[];
 
   @CreateDateColumn()
@@ -28,4 +27,5 @@ export class Student {
 
   @DeleteDateColumn()
   deletedAt: Date;
+
 }

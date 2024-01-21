@@ -4,18 +4,18 @@ import { AuthController } from './auth.controller';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { JwtModule } from '@nestjs/jwt';
-import { AuthMiddleware } from 'src/middleware/auth.middleware';
 import { UsersModule } from 'src/users/users.module';
 import { ConfigModule } from '@nestjs/config';
+import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 
 @Module({
   controllers: [AuthController], 
-  imports: [UsersModule, JwtModule.register({secret: "daulet-test-key", signOptions: {expiresIn: "1h"}}), ConfigModule],
-  providers: [AuthService, JwtAuthGuard, RolesGuard],
+  imports: [UsersModule, 
+    JwtModule.register({secret: "daulet-test-key", signOptions: {expiresIn: "1h"}}),
+    PassportModule.register({ defaultStrategy: 'jwt' }),ConfigModule],
+  providers: [AuthService, JwtAuthGuard, RolesGuard, JwtStrategy],
 })
-export class AuthModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).forRoutes('*');
-  }
-}
+export class AuthModule {}
+

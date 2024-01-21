@@ -2,6 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
 import { AllConfigType } from '../config.type';
+import { User } from 'src/users/entities/user.entity';
+import { Student } from 'src/students/entities/student.entity';
+import { Group } from 'src/groups/entities/group.entity';
+import { Grade } from 'src/grades/entities/grade.entity';
+import { Subject } from 'src/subjects/entities/subject.entity';
 
 @Injectable()
 export class TypeOrmConfigService implements TypeOrmOptionsFactory {
@@ -9,7 +14,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
 
   createTypeOrmOptions(): TypeOrmModuleOptions {
     return {
-      type: this.configService.get('database.type', { infer: true }),
+      type: 'postgres',
       url: this.configService.get('database.url', { infer: true }),
       host: this.configService.get('database.host', { infer: true }),
       port: this.configService.get('database.port', { infer: true }),
@@ -23,7 +28,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       keepConnectionAlive: true,
       logging:
         this.configService.get('app.nodeEnv', { infer: true }) !== 'production',
-      entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+      entities: [User, Student, Group, Grade, Subject],
       migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
       // migrations: [],
       cli: {

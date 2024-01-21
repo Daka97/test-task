@@ -16,7 +16,6 @@ import { DataSource, DataSourceOptions } from 'typeorm';
 
 @Module({
   imports: [SubjectsModule, UsersModule, StudentsModule, GroupsModule, GradesModule, AuthModule,
-     TypeOrmModule.forRoot({ autoLoadEntities: true}),
      ConfigModule.forRoot({
       isGlobal: true,
       load: [appConfig, databaseConfig],
@@ -29,7 +28,8 @@ import { DataSource, DataSourceOptions } from 'typeorm';
       ): Promise<DataSource> => {
         return await new DataSource(options).initialize();
       },
-    }),],
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

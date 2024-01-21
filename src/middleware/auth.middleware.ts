@@ -1,25 +1,20 @@
-// auth.middleware.ts
-import { Injectable, NestMiddleware } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
-import { JwtService } from '@nestjs/jwt';
+// authorization.middleware.ts
 
-@Injectable()
-export class AuthMiddleware implements NestMiddleware {
-  constructor(private readonly jwtService: JwtService) {}
+import { RolePermissions } from "src/permission/role-permission.enum";
 
-  use(req: Request, res: Response, next: NextFunction) {
-    const token = req.headers['authorization'];
-
-    if (!token) {
-      return res.status(401).json({ message: 'Unauthorized' });
+export function AuthorizationMiddleware(permissions: string[]) {
+  return (req, res, next) => {
+    const userRole = req.user.role; 
+    if (userRole && RolePermissions[userRole]) {
+      const userPermissions = RolePermissions[userRole];
+      
+      if (permissions.some(permission => userPermissions.includes(permission))) {
+        next();
+      } else {
+        res.status(403).json({ message: 'Forbidden - Insufficient permissions' });
+      }
+    } else {
+      res.status(500).json({ message: 'Internal Server Error' });
     }
-
-    try {
-      const decoded = this.jwtService.verify(token);
-    //   req.user = decoded; 
-      next();
-    } catch (error) {
-      return res.status(401).json({ message: 'Invalid token' });
-    }
-  }
+  };
 }
