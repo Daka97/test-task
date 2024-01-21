@@ -1,5 +1,4 @@
-import { registerAs } from '@nestjs/config';
-import { DatabaseConfig } from './config.type';
+import { DatabaseConfig, DatabaseConfigType } from './config.type';
 import { User } from 'src/users/entities/user.entity';
 import { Student } from 'src/students/entities/student.entity';
 import { Subject } from 'src/subjects/entities/subject.entity';
@@ -8,15 +7,23 @@ import { Grade } from 'src/grades/entities/grade.entity';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
-export const dataSourceConfig = new DataSource({
-    type: "postgres",
-    host: "localhost",
-    port: 5432,
-    username: "dauleturumbaev",
-    password: "Daka9711!",
-    database: "postgres",
-    entities: [User, Student, Subject, Group, Grade],
-    migrations: ['src/migrations/*{.ts}'],
-    synchronize: true, 
-    migrationsRun: true, 
+import { registerAs } from '@nestjs/config';
+
+
+export default registerAs<DatabaseConfigType>('database', () => {
+  return {
+    url: process.env.DATABASE_URL,
+    type: process.env.DATABASE_TYPE,
+    host: process.env.DATABASE_HOST,
+    port: process.env.DATABASE_PORT
+      ? parseInt(process.env.DATABASE_PORT, 10)
+      : 5432,
+    password: process.env.DATABASE_PASSWORD,
+    name: process.env.DATABASE_NAME,
+    username: process.env.DATABASE_USERNAME,
+    synchronize: process.env.DATABASE_SYNCHRONIZE === 'true',
+    maxConnections: process.env.DATABASE_MAX_CONNECTIONS
+      ? parseInt(process.env.DATABASE_MAX_CONNECTIONS, 10)
+      : 100
+  };
 });
